@@ -22,7 +22,7 @@ class TelegramSettings(BaseModel):
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
     echo: bool = False
-    echo_pool: bool =  False
+    echo_pool: bool = False
     max_overflow: int = 10
     pool_size: int = 50
 
@@ -33,7 +33,13 @@ class Settings(BaseSettings):
     telegram: TelegramSettings = TelegramSettings()
     db: DatabaseConfig
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        env_nested_delimiter="__",
+        env_prefix="APP_CONFIG__",
+        env_file_encoding="utf-8",
+    )
 
 
 settings = Settings()
