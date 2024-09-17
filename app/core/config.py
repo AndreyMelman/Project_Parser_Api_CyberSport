@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import BaseModel
+from pydantic import BaseModel, PostgresDsn
 
 
 class RunConfig(BaseModel):
@@ -19,15 +19,19 @@ class TelegramSettings(BaseModel):
     pass
 
 
-class DatabaseSettings(BaseModel):
-    pass
+class DatabaseConfig(BaseModel):
+    url: PostgresDsn
+    echo: bool = False
+    echo_pool: bool =  False
+    max_overflow: int = 10
+    pool_size: int = 50
 
 
 class Settings(BaseSettings):
     parse: ParseSettings = ParseSettings()
     run: RunConfig = RunConfig()
     telegram: TelegramSettings = TelegramSettings()
-    db: DatabaseSettings = DatabaseSettings()
+    db: DatabaseConfig
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
