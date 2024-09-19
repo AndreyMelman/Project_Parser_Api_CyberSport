@@ -9,14 +9,30 @@ from core import crud
 
 async def collector():
     while True:
-        await parse_news()
+        await save_news_in_db()
+        await save_unread_news()
         await asyncio.sleep(60)
 
 
-async def parse_news(
-    session: AsyncGenerator[AsyncSession, None] = db_helper.session_getter()
-):
+# Функция парсера новостей
+async def parse_news():
     parser = await p.load_articles()
+    return parser
+
+
+# Функция сохранения новых новостей в базу данных
+async def save_news_in_db(
+    session: AsyncGenerator[AsyncSession, None] = db_helper.session_getter(),
+):
+    parser = await parse_news()
 
     async for session in session:
         await crud.save_data_in_db(session, parser)
+
+
+# Функция получения не прочитанных новостей из базы данных
+async def save_unread_news(
+    session: AsyncGenerator[AsyncSession, None] = db_helper.session_getter()
+):
+    async for session in session:
+        await crud.get_unread_news(session)
