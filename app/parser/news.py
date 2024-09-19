@@ -1,9 +1,3 @@
-import time
-from xml.sax import parse
-
-import aiohttp
-import asyncio
-
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
@@ -13,13 +7,12 @@ from core.config import settings
 
 class News:
 
-    def __init__(self, url: str, headers: dict):
+    def __init__(self, url: str, headers: dict[str, str]) -> None:
         self.url = url
         self.headers = headers
 
-
     # Функция парсинга новостного сайта
-    def load_articles(self):
+    async def load_articles(self) -> dict:
         # Получаем URL нашего сайта
         response = requests.get(url=self.url, headers=self.headers)
         # Получаем HTML-файл
@@ -42,7 +35,7 @@ class News:
             if article_img1 and "src" in article_img1.attrs:
                 article_img = article_img1["src"]
             else:
-                article_img = None
+                article_img = ''
 
             date_obj = article.find("time").get("datetime")[:-6]
             article_date = datetime.strptime(date_obj, "%Y-%m-%dT%H:%M:%S")
@@ -53,9 +46,9 @@ class News:
 
             article_id = str(int(article_date.timestamp()))
 
-            news_dict[article_id] = {
+            news_dict[int(article_id)] = {
                 "article_title": article_title,
-                "article_date_time": article_date_time,
+                "article_date_time": article_date,
                 "article_url": article_url,
                 "article_img": article_img,
                 "article_category": article_category,
@@ -63,8 +56,11 @@ class News:
 
         return news_dict
 
-parser = News(settings.parse.url, settings.parse.headers)
 
+parser = News(
+    settings.parse.url,
+    settings.parse.headers,
+)
 
 
 
