@@ -2,11 +2,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel, PostgresDsn
 
 
-class RunConfig(BaseModel):
-    host: str = "localhost"
-    port: int = 8000
-
-
 class ParseSettings(BaseModel):
     url: str = "https://www.cybersport.ru/?sort=-publishedAt"
     headers: dict[str, str] = {
@@ -29,7 +24,6 @@ class DatabaseConfig(BaseModel):
 
 class Settings(BaseSettings):
     parse: ParseSettings = ParseSettings()
-    run: RunConfig = RunConfig()
     telegram: TelegramSettings = TelegramSettings()
     db: DatabaseConfig
 

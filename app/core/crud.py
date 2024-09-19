@@ -1,5 +1,6 @@
 import logging
 
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.models import News
@@ -32,4 +33,17 @@ async def save_data_in_db(
 async def get_unread_news(
     session: AsyncSession,
 ):
-    pass
+    try:
+        stmt = (
+            select(News)
+            .where(News.sent_to_telegram == False)
+            .order_by(News.created_at.desc())
+        )
+        result = await session.execute(stmt)
+        news = result.scalars().all()
+
+        return news
+
+    except Exception as e:
+        await session.rollback()
+        logging.error(f"Error get unread news: {e}")
