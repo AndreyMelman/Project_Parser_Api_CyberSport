@@ -1,25 +1,18 @@
-import uvicorn
+import logging
+import asyncio
 
-from fastapi import FastAPI
-from core.config import settings
-from core.models import db_helper
+from task.collector import collector
 
-from contextlib import asynccontextmanager
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    yield
-    await db_helper.dispose()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
-app = FastAPI(
-    lifespan=lifespan,
-)
 
-if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-        host=settings.run.host,
-        port=settings.run.port,
-    )
+async def main():
+    await collector()
+
+
+if __name__ == '__main__':
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logging.info(f'Выход из бота')
