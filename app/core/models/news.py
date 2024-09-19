@@ -6,7 +6,7 @@ from .base import Base
 class News(Base):
     __tablename__ = "news"
 
-    id_news: Mapped[int] = mapped_column(unique=True)
+    id_news: Mapped[int] = mapped_column(primary_key=True, unique=True)
     title: Mapped[str]
     created_at: Mapped[datetime]
     url: Mapped[str]
