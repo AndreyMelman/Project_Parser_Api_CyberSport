@@ -10,7 +10,6 @@ from core import crud
 async def collector():
     while True:
         await save_news_in_db()
-        await save_unread_news()
         await asyncio.sleep(60)
 
 
@@ -35,4 +34,13 @@ async def save_unread_news(
     session: AsyncGenerator[AsyncSession, None] = db_helper.session_getter()
 ):
     async for session in session:
-        await crud.get_unread_news(session)
+        res = await crud.get_unread_news(session)
+        return res
+
+
+async def mark_news(
+    session: AsyncGenerator[AsyncSession, None] = db_helper.session_getter()
+):
+    async for session in session:
+        res = await crud.mark_news_as_sent(session)
+
