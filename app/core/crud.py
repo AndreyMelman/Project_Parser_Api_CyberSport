@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.models import News
@@ -47,3 +47,22 @@ async def get_unread_news(
     except Exception as e:
         await session.rollback()
         logging.error(f"Error get unread news: {e}")
+
+
+async def mark_news_as_sent(
+    session: AsyncSession,
+    list_id: list,
+):
+    list_id = tuple(list_id)
+    try:
+        stmt = (
+            update(News)
+            .where(News.id_news.in_(list_id))
+            .values(sent_to_telegram=True)
+        )
+        await session.execute(stmt)
+        await session.commit()
+
+    except Exception as e:
+        await session.rollback()
+        logging.error(f"Error updating news status: {e}")

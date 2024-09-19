@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import BaseModel, PostgresDsn
+from pydantic import BaseModel, PostgresDsn, SecretStr
 
 
 class ParseSettings(BaseModel):
@@ -11,8 +11,8 @@ class ParseSettings(BaseModel):
 
 
 class TelegramSettings(BaseModel):
-    pass
-
+    token: SecretStr
+    id: SecretStr
 
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
@@ -24,8 +24,8 @@ class DatabaseConfig(BaseModel):
 
 class Settings(BaseSettings):
     parse: ParseSettings = ParseSettings()
-    telegram: TelegramSettings = TelegramSettings()
     db: DatabaseConfig
+    token: TelegramSettings
 
     model_config = SettingsConfigDict(
         env_file=".env",
