@@ -26,11 +26,10 @@ async def save_data_in_db(
             await session.execute(stmt)
         await session.commit()
     except Exception as e:
-        await session.rollback()
         logging.error(f"Error save data in PostgreSQL: {e}")
 
 
-async def get_unread_news(
+async def save_unread_news(
     session: AsyncSession,
 ):
     try:
@@ -45,7 +44,6 @@ async def get_unread_news(
         return news
 
     except Exception as e:
-        await session.rollback()
         logging.error(f"Error get unread news: {e}")
 
 
@@ -64,5 +62,4 @@ async def mark_news_as_sent(
         await session.commit()
 
     except Exception as e:
-        await session.rollback()
         logging.error(f"Error updating news status: {e}")

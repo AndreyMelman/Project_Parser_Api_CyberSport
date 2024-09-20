@@ -1,9 +1,9 @@
 import asyncio
-from .used_bot import send_news_to_telegram
+from .used_bot import send_news
 
 
 # Функция запускает отправку новостей в телеграм бот каждые 2 часа
 async def spammer():
     while True:
-        await send_news_to_telegram()
+        await send_news()
         await asyncio.sleep(120)

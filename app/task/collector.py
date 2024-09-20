@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,27 +21,25 @@ async def parse_news():
 
 
 # Функция сохранения новых новостей в базу данных
-async def save_news_in_db(
-    session: AsyncGenerator[AsyncSession, None] = db_helper.session_getter(),
-):
-    parser = await parse_news()
+async def save_news_in_db():
+    try:
+        parser = await parse_news()
+        async with db_helper.session_factory() as session:
+            if session:
+                await crud.save_data_in_db(session, parser)
+                logging.info(f'Успешное подключение к базе данных')
 
-    async for session in session:
-        await crud.save_data_in_db(session, parser)
+    except Exception as error:
+        logging.error(f"Ошибка в процессе парсинга и отправки новостей: {error}")
 
 
 # Функция получения не прочитанных новостей из базы данных
-async def save_unread_news(
-    session: AsyncGenerator[AsyncSession, None] = db_helper.session_getter()
-):
-    async for session in session:
-        res = await crud.get_unread_news(session)
-        return res
+async def get_unread_news():
+    try:
+        async with db_helper.session_factory() as session:
+            if session:
+                unread_news = await crud.save_unread_news(session)
+                return unread_news
 
-
-async def mark_news(
-    session: AsyncGenerator[AsyncSession, None] = db_helper.session_getter()
-):
-    async for session in session:
-        res = await crud.mark_news_as_sent(session)
-
+    except Exception as error:
+        logging.error(f"Ошибка в процессе парсинга и отправки новостей: {error}")
