@@ -6,4 +6,4 @@ from .used_bot import send_news
 async def spammer():
     while True:
         await send_news()
-        await asyncio.sleep(120)
+        await asyncio.sleep(60*7)
